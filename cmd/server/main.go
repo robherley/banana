@@ -63,7 +63,7 @@ func main() {
 		// 	}
 		// }
 
-		saFile, err := os.ReadFile("/var/run/secrets/kubernetes.io/serviceaccount")
+		tokenFile, err := os.ReadFile("/var/run/secrets/kubernetes.io/serviceaccount/token")
 		if err != nil {
 			errors = append(errors, err.Error())
 		}
@@ -81,9 +81,9 @@ func main() {
 		response := map[string]interface{}{
 			// "gpus":   gpus,
 			// "env":    os.Environ(),
-			"saFile": string(saFile),
-			"nsFile": string(nsFile),
-			"errors": errors,
+			"tokenFile": string(tokenFile),
+			"nsFile":    string(nsFile),
+			"errors":    errors,
 		}
 
 		res, err := json.Marshal(response)
