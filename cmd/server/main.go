@@ -1,9 +1,13 @@
 package main
 
 import (
+	"encoding/json"
 	"log"
 	"net"
 	"net/http"
+	"os"
+
+	"github.com/jaypipes/ghw"
 )
 
 const (
@@ -18,8 +22,30 @@ func main() {
 			return
 		}
 
+		gpuInfo, err := ghw.GPU()
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+
+		gpus := make([]string, len(gpuInfo.GraphicsCards))
+		for i := range gpuInfo.GraphicsCards {
+			gpus[i] = gpuInfo.GraphicsCards[i].String()
+		}
+
+		response := map[string]interface{}{
+			"gpus": gpus,
+			"env":  os.Environ(),
+		}
+
+		res, err := json.Marshal(response)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+
 		w.Header().Set("Content-Type", "application/json")
-		w.Write([]byte(`{"msg":"🍌"}`))
+		w.Write(res)
 	})
 
 	http.HandleFunc("/healthcheck", func(w http.ResponseWriter, r *http.Request) {
