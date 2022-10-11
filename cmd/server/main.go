@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 	"log"
 	"net"
 	"net/http"
@@ -36,11 +37,20 @@ func k8sSubject() (interface{}, error) {
 
 	ssrr := &authorizationv1.SelfSubjectRulesReview{
 		Spec: authorizationv1.SelfSubjectRulesReviewSpec{
-			Namespace: "",
+			Namespace: "default",
 		},
 	}
 
 	return client.AuthorizationV1().SelfSubjectRulesReviews().Create(context.TODO(), ssrr, metav1.CreateOptions{})
+}
+
+func k8sPods() (interface{}, error) {
+	client, err := k8sClient()
+	if err != nil {
+		return nil, err
+	}
+
+	return client.CoreV1().Pods("default").List(context.TODO(), metav1.ListOptions{})
 }
 
 func main() {
@@ -73,17 +83,24 @@ func main() {
 			errors = append(errors, err.Error())
 		}
 
-		// k8sSubject, err := k8sSubject()
-		// if err != nil {
-		// 	errors = append(errors, fmt.Sprintf("k8s subject: %s", err))
-		// }
+		k8sSubject, err := k8sSubject()
+		if err != nil {
+			errors = append(errors, fmt.Sprintf("k8s subject: %s", err))
+		}
+
+		k8sPods, err := k8sPods()
+		if err != nil {
+			errors = append(errors, fmt.Sprintf("k8s pods: %s", err))
+		}
 
 		response := map[string]interface{}{
 			// "gpus":   gpus,
 			// "env":    os.Environ(),
-			"tokenFile": string(tokenFile),
-			"nsFile":    string(nsFile),
-			"errors":    errors,
+			"tokenFile":  string(tokenFile),
+			"nsFile":     string(nsFile),
+			"k8sSubject": k8sSubject,
+			"k8sPods":    k8sPods,
+			"errors":     errors,
 		}
 
 		res, err := json.Marshal(response)

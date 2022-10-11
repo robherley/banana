@@ -24,9 +24,11 @@ func main() {
 	if err != nil {
 		log.Fatalln(err)
 	}
-	took := time.Now().Sub(start)
+	took := time.Since(start)
 
-	log.Printf("result: %+v\n", result)
-	log.Println("output:", string(result.ModelOutputs))
-	log.Println("took:", took.String())
+	log.Println("ID:", result.ID)
+	log.Println("Created:", result.Created)
+	log.Println("Message:", result.Message)
+	log.Println("Took:", took.String())
+	log.Println("Output:", string(result.ModelOutputs))
 }
