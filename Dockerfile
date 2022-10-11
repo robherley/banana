@@ -7,7 +7,7 @@ COPY go.sum ./
 RUN go mod download
 RUN go mod verify
 
-COPY main.go ./
+COPY cmd/server/main.go ./
 
 RUN go build -o banana
 

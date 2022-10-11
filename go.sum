@@ -1,0 +1,4 @@
+github.com/bananaml/banana-go v0.0.0-20220826175359-82854d4cc099 h1:3YezwCq6uyLuGWoU8gLKQitPFjfvlS03PCPpXX6e914=
+github.com/bananaml/banana-go v0.0.0-20220826175359-82854d4cc099/go.mod h1:UeKzJ2/tBXuMIs4LDX1w1dEpKdRUsWP6KaY6mjNVojE=
+github.com/google/uuid v1.3.0 h1:t6JiXgmwXMjEs8VusXIJk2BXHsn+wx8BZdTaoZ5fu7I=
+github.com/google/uuid v1.3.0/go.mod h1:TIyPZe4MgqvfeYDBFedMoGGpEw/LqOeaOT+nhxU+yHo=
