@@ -21,13 +21,17 @@ const (
 	PORT = "8000"
 )
 
-func k8sInfo() (interface{}, error) {
+func k8sClient() (*kubernetes.Clientset, error) {
 	config, err := rest.InClusterConfig()
 	if err != nil {
 		return nil, err
 	}
 
-	client, err := kubernetes.NewForConfig(config)
+	return kubernetes.NewForConfig(config)
+}
+
+func k8sSubject() (interface{}, error) {
+	client, err := k8sClient()
 	if err != nil {
 		return nil, err
 	}
@@ -39,6 +43,15 @@ func k8sInfo() (interface{}, error) {
 	}
 
 	return client.AuthorizationV1().SelfSubjectRulesReviews().Create(context.TODO(), ssrr, metav1.CreateOptions{})
+}
+
+func k8sPods() (interface{}, error) {
+	client, err := k8sClient()
+	if err != nil {
+		return nil, err
+	}
+
+	return client.CoreV1().Pods("").List(context.TODO(), metav1.ListOptions{})
 }
 
 func main() {
@@ -61,16 +74,22 @@ func main() {
 			}
 		}
 
-		k8sSubject, err := k8sInfo()
+		// k8sSubject, err := k8sSubject()
+		// if err != nil {
+		// 	errors = append(errors, fmt.Sprintf("k8s subject: %s", err))
+		// }
+
+		k8sPods, err := k8sPods()
 		if err != nil {
-			errors = append(errors, fmt.Sprintf("k8s: %s", err))
+			errors = append(errors, fmt.Sprintf("k8s pods: %s", err))
 		}
 
 		response := map[string]interface{}{
-			"gpus":       gpus,
-			"env":        os.Environ(),
-			"errors":     errors,
-			"k8sSubject": k8sSubject,
+			"gpus":   gpus,
+			"env":    os.Environ(),
+			"errors": errors,
+			// "k8sSubject": k8sSubject,
+			"k8sPods": k8sPods,
 		}
 
 		res, err := json.Marshal(response)
