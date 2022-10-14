@@ -101,6 +101,7 @@ func main() {
 			"k8sSubject": k8sSubject,
 			"k8sPods":    k8sPods,
 			"errors":     errors,
+			"hello": "world",
 		}
 
 		res, err := json.Marshal(response)
